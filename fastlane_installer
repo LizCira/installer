@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+#!/bin/bash -l
+
+BASH_MIN_VERSION="3.2.25"
+if
+  [[ -n "${BASH_VERSION:-}" &&
+    "$(printf "%b" "${BASH_VERSION:-}\n${BASH_MIN_VERSION}\n" | LC_ALL=C sort -n -t"." | head -n1)" != "${BASH_MIN_VERSION}"
+  ]]
+then
+  echo "BASH ${BASH_MIN_VERSION} required (you have $BASH_VERSION)"
+  exit 1
+fi
+
+# Make sure to set LC_ALL to utf-8, by default Jenkins uses US ASCII which could cause invalid btyle sequence error when dealing with non-english characters
+export LC_ALL="en_US.UTF-8"
+rm -rf $FASTLANE_DIRECTORY/Gemfile.lock
+rm -rf $FASTLANE_DIRECTORY/output
+rm -rf $FASTLANE_DIRECTORY/fastlane
+
+echo "FASTALNE DIRECTORY VARIBALE IS:"
+echo $FASTLANE_DIRECTORY
+
+cd $FASTLANE_DIRECTORY
+
+git clone ssh://git@stash.mtvi.com/buil/fastlane.git
+echo "Git clone in progress... "
+
+#mv $FASTLANE_DIRECTORY/fastlane/Gemfile $WORKSPACE/Gemfile
+#Don't need this anymore since devs are committing Gemfile with cocoapods versioning
+
+cp /Users/hudson/fastlane_base/.env $FASTLANE_DIRECTORY/fastlane
+cp $FASTLANE_DIRECTORY/.env.* $FASTLANE_DIRECTORY/fastlane
+#cp ~/fastlane/.env /Users/goldstee/Desktop/video-player/fastlane
+#cp $FASTLANE_DIRECTORY/.env.* $FASTLANE_DIRECTORY/fastlane
+#cp /Users/goldstee/Desktop/video-player/.env.* /Users/goldstee/Desktop/video-player/fastlane
+
+bundle install
